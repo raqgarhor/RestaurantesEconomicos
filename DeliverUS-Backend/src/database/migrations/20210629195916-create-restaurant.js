@@ -86,7 +86,12 @@ module.exports = {
           },
           key: 'id'
         }
+      },
+      economic: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       }
+
     })
   },
   down: async (queryInterface, Sequelize) => {

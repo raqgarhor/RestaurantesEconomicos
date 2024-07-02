@@ -39,7 +39,17 @@ export default function RestaurantsScreen ({ navigation, route }) {
         {item.averageServiceMinutes !== null &&
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
-        <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        {/* SOLUCIÓN */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }} >
+          <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+          {item.economic &&
+              <TextRegular textStyle={[styles.badge, { color: GlobalStyles.brandSuccess, borderColor: GlobalStyles.brandSuccess }] }>€</TextRegular>
+          }
+          {!item.economic &&
+              <TextRegular textStyle={[styles.badge, { color: GlobalStyles.brandPrimary, borderColor: GlobalStyles.brandPrimary }] }>€€</TextRegular>
+          }
+        </View>
+         {/* SOLUCIÓN */}
         <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
@@ -212,5 +222,13 @@ const styles = StyleSheet.create({
   emptyList: {
     textAlign: 'center',
     padding: 50
+  },
+  badge: {
+    textAlign: 'center',
+    borderWidth: 2,
+    width: 45,
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    borderRadius: 10
   }
 })

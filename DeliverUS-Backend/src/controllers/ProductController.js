@@ -39,11 +39,42 @@ const show = async function (req, res) {
 const create = async function (req, res) {
   let newProduct = Product.build(req.body)
   try {
+    // SOLUCION
+    updateEconomic(newProduct.restaurantId)
     newProduct = await newProduct.save()
     res.json(newProduct)
   } catch (err) {
     res.status(500).send(err)
   }
+}
+/*
+
+Un restaurante será económico si, una vez se dé de alta un producto del mismo, el precio medio de los productos del mismo
+ sea menor que el precio medio de los productos del resto de restaurantes.
+Nota1: Para hacer un filtrado de productos cuyo restaurante sea distinto del restaurante actual puede usar el operador not
+equal (Sequelize.Op.ne)
+*/
+// SOLUCION
+const updateEconomic = async function (RestaurantId) {
+  const AvgPriceOtherRestaurants = Product.findAll(
+    {
+      where: { restaurantId: { [Sequelize.Op.ne]: RestaurantId } },
+      attributes: [
+        [Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+      ]
+    }
+  )
+  const AvgPriceMyRestaurant = Product.findOne({
+    where: { restaurantId: RestaurantId },
+    attributes: [
+      [Sequelize.fn('AVG', Sequelize.col('price')), 'avgPrice']
+    ]
+  })
+  const restaurant = await Restaurant.findByPk(RestaurantId)
+  if (AvgPriceMyRestaurant !== null && AvgPriceOtherRestaurants !== null) {
+    restaurant.economic = AvgPriceMyRestaurant.avgPrice < AvgPriceOtherRestaurants.avgPrice
+  }
+  await restaurant.save()
 }
 
 const update = async function (req, res) {
